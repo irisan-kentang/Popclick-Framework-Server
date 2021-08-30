@@ -33,9 +33,10 @@ const Country = mongoose.model('Country', mongoose.Schema({
 }));
 
 io.on('connection', async (socket) => {
-    console.log(`Received from ${socket.handshake.address}`)
+    const ipaddr = socket.request.connection.remoteAddress
+    console.log(`Received from ${ipaddr}`)
     // cek geolocation
-    let geoinfo = geoip.lookup(socket.handshake.address)
+    let geoinfo = geoip.lookup(ipaddr)
     let country = (geoinfo == null) ? "NO_GEOLOCATION" : geoinfo.country
     socket.country = country
 
@@ -87,19 +88,20 @@ io.on('connection', async (socket) => {
 })
 
 function checkBan(socket) {
-    if (banList[socket.handshake.address] == null) {
-        banList[socket.handshake.address] = {
+    const ipaddr = socket.request.connection.remoteAddress
+    if (banList[ipaddr] == null) {
+        banList[ipaddr] = {
             ban: false,
             lastBan: null
         }
     }
 
-    banInfo = banList[socket.handshake.address]
+    banInfo = banList[ipaddr]
     if (banInfo.ban) {
         let now = Date.now()
         let timeDif = now - banInfo.lastBan
         if (timeDif/1000 > BAN_TIME_LIMIT) {
-            banList[socket.handshake.address] = {
+            banList[ipaddr] = {
                 ban: false,
                 lastBan: null
             }
@@ -116,7 +118,7 @@ function notifyBan(socket) {
 }
 
 function banUser(socket) {
-    banList[socket.handshake.address] = {
+    banList[socket.request.connection.remoteAddress] = {
         ban: true,
         lastBan: Date.now()
     }
