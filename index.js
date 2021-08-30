@@ -33,7 +33,7 @@ const Country = mongoose.model('Country', mongoose.Schema({
 }));
 
 io.on('connection', async (socket) => {
-    const ipaddr = socket.request.connection.remoteAddress
+    const ipaddr = socket.handshake.headers['x-forwarded-for']
     console.log(`Received from ${ipaddr}`)
     // cek geolocation
     let geoinfo = geoip.lookup(ipaddr)
@@ -88,7 +88,7 @@ io.on('connection', async (socket) => {
 })
 
 function checkBan(socket) {
-    const ipaddr = socket.request.connection.remoteAddress
+    const ipaddr = socket.handshake.headers['x-forwarded-for']
     if (banList[ipaddr] == null) {
         banList[ipaddr] = {
             ban: false,
@@ -118,7 +118,7 @@ function notifyBan(socket) {
 }
 
 function banUser(socket) {
-    banList[socket.request.connection.remoteAddress] = {
+    banList[socket.handshake.headers['x-forwarded-for']] = {
         ban: true,
         lastBan: Date.now()
     }
