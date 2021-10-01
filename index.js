@@ -21,7 +21,7 @@ let clients = []
 let banList = {}
 let scores = null
 
-const MAX_ALLOWED_SCORE_PER_TICK = 30
+const MAX_ALLOWED_SCORE_PER_TICK = 30 // maximum skor per tick
 const BAN_TIME_LIMIT = 60 // seconds
 
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/popclick'
